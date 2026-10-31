@@ -1,0 +1,5 @@
+{
+  "name": "codex-warmup-local",
+  "interface": {"displayName": "Codex 预热源码快照"},
+  "plugins": [{"name": "codex-warmup", "source": "./codex-warmup"}]
+}

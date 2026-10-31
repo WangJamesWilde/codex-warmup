@@ -1,0 +1,12 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "codex-warmup",
+  "version": "0.6.0",
+  "description": "Local quota-window warm-up and explicitly selected chat recovery, with a native sidebar manager. No API keys or reset purchases.",
+  "extensions": {"com.openai": {
+    "hooks": "./hooks/hooks.json",
+    "requires_local_executor": true,
+    "interface": {"displayName": "Codex 预热", "shortDescription": "额度恢复后预热，可随时暂停",
+      "category": "Productivity", "capabilities": ["Interactive"], "defaultPrompt": "查看预热插件的运行状态"}
+  }}
+}

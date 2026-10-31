@@ -1,0 +1,20 @@
+# Runtime state and personal configuration must never be published.
+.state/
+node_modules/
+__pycache__/
+*.py[cod]
+*.sqlite*
+*.db
+*.db-*
+*.log
+*.jsonl
+.playwright-cli/
+.env
+.env.*
+!.env.example
+auth.json
+credentials.json
+config.local.*
+*.pem
+*.key
+.DS_Store

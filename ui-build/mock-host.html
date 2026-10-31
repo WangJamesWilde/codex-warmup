@@ -1,0 +1,35 @@
+<!doctype html><html><head><meta charset="utf-8"><style>body{margin:0}iframe{width:100%;height:100vh;border:0;display:block}</style></head><body><iframe id="app"></iframe><script>
+const now=Math.floor(Date.now()/1000);
+window.calls=[];
+window.state={enabled:true,login_autostart:true,worker:{heartbeat:now,state:'window_already_active'},quota:{at:now,account:'test-account'},readable_quota:{primary:{remaining_percent:68,resets_local:new Date((now+3600)*1000).toISOString()},secondary:{remaining_percent:95,resets_local:new Date((now+86400)*1000).toISOString()}},selected_chats:[],events:[{at:now,event:'enabled'}]};
+window.state.diagnostics={state:'healthy',process_alive:true,heartbeat_age_seconds:0,log_path:'D:/fixture/diagnostics.jsonl'};
+window.addEventListener('message',event=>{
+ const message=event.data;if(message?.jsonrpc!=='2.0')return;
+ const reply=result=>event.source.postMessage({jsonrpc:'2.0',id:message.id,result},'*');
+ if(message.method==='ui/initialize')reply({protocolVersion:'2026-01-26',hostInfo:{name:'offline-ui-test',version:'26.1023.6123'},hostCapabilities:{serverTools:{},serverResources:{}},hostContext:{theme:'light',displayMode:'fullscreen',locale:'zh-CN'}});
+ else if(message.method==='ui/notifications/initialized')event.source.postMessage({jsonrpc:'2.0',method:'ui/notifications/tool-result',params:{content:[],structuredContent:window.state}},'*');
+ else if(message.method==='tools/call'){
+  const {name,arguments:args}=message.params;window.calls.push({name,args});let value=window.state;
+  if(name==='warmup_pause')window.state.enabled=false;
+  else if(name==='warmup_warning_configure'){window.state.low_quota_warning={enabled:args.enabled,threshold:args.threshold};value={low_quota_warning:window.state.low_quota_warning,requires_hook_trust:true,message_sent:false};}
+  else if(name==='warmup_enable'){if(args.confirm_quota_spend!==true)throw Error('Missing explicit enable consent');window.state.enabled=true;}
+  else if(name==='warmup_chats')value={chats:[{id:'019e3130-0000-7000-8000-000000000001',title:'离线测试对话',model:'original-model'}],next_cursor:null};
+  else if(name==='warmup_rule_save'){if(args.confirm_send!==true)throw Error('Missing send consent');const old=window.state.selected_chats[0];window.state.selected_chats=[{id:'00000000-0000-4000-8000-000000000001',account:'test-account',revision:(old?.revision||0)+1,thread_id:args.thread_id,title:'离线测试对话',...args,repeat:args.run_limit!==1,remaining_runs:args.run_limit,armed_at:now,last_result:null}];value={rules:window.state.selected_chats};}
+  else if(name==='warmup_rule_set_enabled'){
+   if(args.enabled&&args.confirm_send!==true)throw Error('Missing quick send consent');
+   let rule=window.state.selected_chats.find(rule=>rule.thread_id===args.thread_id);
+   if((rule?.revision||0)!==args.expected_revision)value={conflict:true};
+   else{if(!rule&&args.enabled){rule={id:'00000000-0000-4000-8000-000000000001',thread_id:args.thread_id,title:'离线测试对话',account:'test-account',message:'继续',repeat:false,run_limit:1,remaining_runs:1,revision:0};window.state.selected_chats.push(rule);}if(rule){rule.enabled=args.enabled;rule.revision++;}value={conflict:false,message_sent:false};}
+  }
+  else if(name==='warmup_rule_set_mode'){
+   const rule=window.state.selected_chats.find(rule=>rule.id===args.rule_id);
+   if(!rule||rule.revision!==args.expected_revision)value={conflict:true};
+   else{rule.run_limit=args.run_limit;rule.remaining_runs=args.run_limit;rule.repeat=args.run_limit!==1;rule.revision++;value={conflict:false,message_sent:false};}
+  }
+  else if(name==='warmup_rule_remove'){window.state.selected_chats=[];value={rules:[]};}
+  else if(name==='warmup_refresh')value={snapshot:window.state.quota};
+  reply({content:[],structuredContent:value});
+ }else if(message.id!==undefined)reply({});
+});
+document.getElementById('app').srcdoc=/*__APP_JSON__*/;
+</script></body></html>

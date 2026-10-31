@@ -1,0 +1,12 @@
+{
+  "name": "codex-warmup-ui-build",
+  "private": true,
+  "type": "module",
+  "scripts": {"build": "node build.mjs"},
+  "devDependencies": {
+    "@openai/mcp-extensions": "0.2.1",
+    "@modelcontextprotocol/ext-apps": "1.7.5",
+    "@modelcontextprotocol/sdk": "1.29.0",
+    "esbuild": "0.28.1"
+  }
+}

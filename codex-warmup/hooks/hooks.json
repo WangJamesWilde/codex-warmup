@@ -1,0 +1,13 @@
+{
+  "hooks": {
+    "PostToolUse": [{
+      "hooks": [{
+        "type": "command",
+        "command": "python -B \"${PLUGIN_ROOT}/hooks/low-quota.py\"",
+        "timeout": 3,
+        "additionalContextLimit": 500,
+        "statusMessage": "Checking low-quota reminder"
+      }]
+    }]
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "codex-warmup", "version": "0.6.0",
+  "description": "Local quota-window warm-up and status controls.",
+  "requires_local_executor": true,
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks.json",
+  "mcpServers": "./.mcp.json",
+  "interface": {"displayName": "Codex 预热", "shortDescription": "额度恢复后预热，可随时暂停", "category": "Productivity", "capabilities": ["Interactive"]}
+}
